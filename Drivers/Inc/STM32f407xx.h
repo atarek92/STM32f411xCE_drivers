@@ -321,8 +321,8 @@ typedef struct
 	__vo uint32_t  TIMx_BDTR;		/* Break and dead-time register 				Address offset: 0x44 */
 	__vo uint32_t  TIMx_DCR;		/* DMA control register		 					Address offset: 0x48 */
 	__vo uint32_t  TIMx_DMAR;		/* 8 DMA address for full transfer				Address offset: 0x4C */
-} TIM_ADVANCED_RegDef_t;
 
+} TIM_ADVANCED_RegDef_t;
 
 /******************************************************************************************
  * Peripheral definitions (Peripheral base addresses type-casted to xxx_RegDef_t)
@@ -664,5 +664,25 @@ typedef struct
  * Bit position definitions TIM_ADV_SR
  */
 #define TIM_ADV_SR_UIF	     				 0				/*  Counter enable */
+
+
+/******************************************************************************************
+ *Bit position definitions of General Timer 2 to 5 peripheral
+ ******************************************************************************************/
+/*
+ * Bit position definitions TIM_GEN_2_5_CR1
+ */
+#define TIM_GEN_2_5_CR1_CEN     				 0				/* Counter enable */
+
+ /*
+  * Bit position definitions TIM_GEN_2_5_CCER
+  */
+ #define TIM_GEN_2_5_CCER_CC1E     			 	0				/* Enable Output Capture/Compare 1 (OC1) */
+
+/*
+ * Bit position definitions TIM_GEN_2_5_CCER
+ */
+#define TIM_GEN_2_5_CCMR1_OC1M     			 	4				/* Output compare 1 mode */
+
 
 #endif /* STM32F407XX_H_ */

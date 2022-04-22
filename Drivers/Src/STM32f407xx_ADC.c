@@ -36,7 +36,6 @@ void ADC_PeriClockControl(ADC_RegDef_t *pADCx, uint8_t EnorDi)
 	}
 }
 
-
 /*********************************************************************
  * @fn      		  - ADC_Init
  *
@@ -54,7 +53,6 @@ void ADC_PeriClockControl(ADC_RegDef_t *pADCx, uint8_t EnorDi)
 
 void ADC_Init(ADC_Handle_t *pADCHandle)
 {
-
 	/* Enable the clock access to the ADC module*/
 	ADC_PeriClockControl(pADCHandle->pADCx, ENABLE);
 
@@ -64,7 +62,7 @@ void ADC_Init(ADC_Handle_t *pADCHandle)
 	/* Set ADC channel*/
 	pADCHandle->pADCx->ADC_SQR3 |= pADCHandle->ADC_Config.ADC_Channel << ADC_SQR_COV_1;
 
-	/* Set conversion t continues */
+	/* Set conversion mode as continuous */
 	pADCHandle->pADCx->ADC_CR2 |= pADCHandle->ADC_Config.ADC_ConverterMode << ADC_CR2_CONT;
 
 	/* Enable ADC module*/
@@ -72,7 +70,6 @@ void ADC_Init(ADC_Handle_t *pADCHandle)
 
 	/* Start conversion */
 	pADCHandle->pADCx->ADC_CR2 |= 1 << ADC_CR2_SWSTART;
-
 }
 
 /*********************************************************************

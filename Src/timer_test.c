@@ -36,16 +36,16 @@ int main (void)
 	GPIO_Init(&GPIOBtn);
 
 	/* Timer configuration */
-	TIM_ADVANCED_Handle_t pTIMHandle;
-	pTIMHandle.pTIMx=TIM1;
-	pTIMHandle.TIM_Config.TIM_Prescaler = 1600;
-	pTIMHandle.TIM_Config.TIM_AutoRelaod = 10000;
-    TIM_ADVANCED_init(&pTIMHandle);
+	TIM_ADVANCED_Handle_t timer_handle;
+	timer_handle.pTIMx=TIM1;
+	timer_handle.TIM_Config.TIM_Prescaler = 1600;
+	timer_handle.TIM_Config.TIM_AutoRelaod = 10000;
+    TIM_ADVANCED_init(&timer_handle);
 
 	while (1)
 	{
 		GPIO_ToggleOutputPin(LED_PORT,LED_PIN);
-		while (!Check_TIM_ADVANCED_Interrupt_flag(&pTIMHandle));
+		while (!Check_TIM_ADVANCED_Interrupt_flag(&timer_handle));
 //		systickDelayMs(1000);
 
 	}
