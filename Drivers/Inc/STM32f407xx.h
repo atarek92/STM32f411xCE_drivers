@@ -30,6 +30,8 @@
  * Base addresses of Cortex M4
  */
 #define SYSTICK_BASEADDR					(0xE000E010U)
+#define NVIC_ISER_BASEADDR					(0xE000E100U)
+#define NVIC_ICER_BASEADDR					(0xE000E180U)
 
 /*
  * AHBx and APBx Bus Peripheral base addresses
@@ -87,6 +89,8 @@
 #define TIM9_BASEADDR						(APB2PERIPH_BASEADDR + 0x4000)
 #define TIM10_BASEADDR						(APB2PERIPH_BASEADDR + 0x4400)
 #define TIM11_BASEADDR						(APB2PERIPH_BASEADDR + 0x4800)
+
+#define EXTI_BASEADDR						(APB2PERIPH_BASEADDR + 0x3C00)
 
 
 /******************************************************************************************
@@ -155,14 +159,21 @@ typedef struct
 	__vo uint32_t STK_LOAD;						/*!< SysTick reload value register,     			Address offset: 0x04      */
 	__vo uint32_t STK_VAL;						/*!< SysTick current value register,     			Address offset: 0x08      */
 	__vo uint32_t STK_CALIB;					/*!< SysTick calibration value register,   			Address offset: 0x0C      */
-
 }SYSTICK_RegDef_t;
 
 /*
  * peripheral register definition structure for EXTI
  */
 
-
+typedef struct
+{
+	__vo uint32_t IMR;						/*!< Interrupt mask register,          					Address offset: 0x00      */
+	__vo uint32_t EMR;						/*!< Event mask register,     							Address offset: 0x04      */
+	__vo uint32_t RTSR;						/*!< Rising trigger selection register,     			Address offset: 0x08      */
+	__vo uint32_t FTSR;						/*!< Falling trigger selection register,   				Address offset: 0x0C      */
+	__vo uint32_t SWIER;					/*!< Software interrupt event register,   				Address offset: 0x10      */
+	__vo uint32_t PR;						/*!< Pending register,   								Address offset: 0x14      */
+}EXTI_RegDef_t;
 
 /*
  * peripheral register definition structure for SPI
@@ -179,14 +190,20 @@ typedef struct
 	__vo uint32_t  SPI_TXCRCR;	/* SPI TX CRC register								Address offset: 0x18 */
 	__vo uint32_t  SPI_I2SCFGR;	/* SPI_I2S configuration register					Address offset: 0x1C */
 	__vo uint32_t  SPI_I2SPR;	/* SPI_I2S prescaler register						Address offset: 0x20 */
-
 } SPI_RegDef_t;
 
 /*
  * peripheral register definition structure for SYSCFG
  */
 
-
+typedef struct
+{
+	__vo uint32_t  MEMRMP;		/* SYSCFG memory remap registeR							Address offset: 0x00 */
+	__vo uint32_t  PMC;			/* SYSCFG peripheral mode configuration register		Address offset: 0x04 */
+	__vo uint32_t  EXTICR[4];	/* SYSCFG external interrupt configuration register		Address offset: 0x08 - 0x14 */
+	__vo uint32_t  RESERVED[2];	/* 														Address offset: 0x18 - 0x1C */
+	__vo uint32_t  CMPCR;		/* Compensation cell control register					Address offset: 0x20 */
+} SYSCFG_RegDef_t;
 
 /*
  * peripheral register definition structure for I2C
@@ -324,6 +341,16 @@ typedef struct
 
 } TIM_ADVANCED_RegDef_t;
 
+typedef struct
+{
+	__vo uint32_t  ISER[8];		/* Interrupt set-enable register				Address offset: 0x0 */
+} NVIC_ISER_RegDef_t;
+
+typedef struct
+{
+	__vo uint32_t  ICER[8];		/* Interrupt clear-enable register				Address offset: 0x0 */
+} NVIC_ICER_RegDef_t;
+
 /******************************************************************************************
  * Peripheral definitions (Peripheral base addresses type-casted to xxx_RegDef_t)
  ******************************************************************************************/
@@ -338,6 +365,8 @@ typedef struct
 #define RCC 				((RCC_RegDef_t*)RCC_BASEADDR)
 #define SYSCFG				((SYSCFG_RegDef_t*)SYSCFG_BASEADDR)
 #define SYSTICK				((SYSTICK_RegDef_t*)SYSTICK_BASEADDR)
+#define NVIC_ISER			((NVIC_ISER_RegDef_t*)NVIC_ISER_BASEADDR)
+#define NVIC_ICER			((NVIC_ICER_RegDef_t*)NVIC_ICER_BASEADDR)
 
 #define SPI1  				((SPI_RegDef_t*)SPI1_BASEADDR)
 #define SPI2  				((SPI_RegDef_t*)SPI2_BASEADDR)
@@ -363,6 +392,8 @@ typedef struct
 #define TIM10				((TIM_10_11_GENERAL_RegDef_t*)TIM10_BASEADDR)
 #define TIM11				((TIM_10_11_GENERAL_RegDef_t*)TIM11_BASEADDR)
 
+
+#define EXTI				((EXTI_RegDef_t*)EXTI_BASEADDR)
 
 /******************************************************************************************
  * Clock Enable / Disable Macros
@@ -685,4 +716,14 @@ typedef struct
 #define TIM_GEN_2_5_CCMR1_OC1M     			 	4				/* Output compare 1 mode */
 
 
+/******************************************************************************************
+ *IRQ Numbers
+ ******************************************************************************************/
+#define IRQ_NO_EXTI0							6
+#define IRQ_NO_EXTI1							7
+#define IRQ_NO_EXTI2							8
+#define IRQ_NO_EXTI3							9
+#define IRQ_NO_EXTI4							10
+#define IRQ_NO_EXTI9_5							23
+#define IRQ_NO_EXTI15_10						40
 #endif /* STM32F407XX_H_ */

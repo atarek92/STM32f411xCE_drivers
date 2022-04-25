@@ -84,7 +84,36 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	}
 	else																		/* Interrupt mode */
 	{
+		if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_IT_FT)
+		{
+			/* Configure FTSR */
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			/* Clear RTSR */
+			EXTI->RTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_IT_FT)
+		{
+			/* Configure RTSR */
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			/* Clear FTSR */
+			EXTI->FTSR &= ~(1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
+		else if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_IT_FT)
+		{
+			/* Configure FTSR & FTSR */
+			EXTI->FTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+			EXTI->RTSR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
+		}
 
+		/* Configure GPIO port selection in the SYSCFG_EXTICR Reg */
+		uint8_t SYSCFG_EXTICR_Reg = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / 4;
+		uint8_t SYSCFG_EXTICR_bit = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % 4;
+		SYSCFG_PCLK_EN();
+		SYSCFG->EXTICR[SYSCFG_EXTICR_Reg] = GPIOToSYSCFG_EXTICRPortCode(pGPIOHandle->pGPIOx)
+											<< (SYSCFG_EXTICR_bit * 4);
+
+		/* Enable the EXTI interrupt IMR Reg*/
+		EXTI->IMR |= (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 	}
 
 	set_value = 0;
@@ -114,10 +143,10 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode == GPIO_MODE_ALTFN)
 	{
 		uint8_t AFR_register = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber / NO_BITS_IN_BYTE;
-		uint8_t AFR_pin = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % NO_BITS_IN_BYTE;
+		uint8_t AFR_bit = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber % NO_BITS_IN_BYTE;
 
-		pGPIOHandle->pGPIOx->AFR[AFR_register] &= ~ (0xF << (4 * AFR_pin));							/* Clear Register */
-		pGPIOHandle->pGPIOx->AFR[AFR_register] |= pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << (4 * AFR_pin);
+		pGPIOHandle->pGPIOx->AFR[AFR_register] &= ~ (0xF << (4 * AFR_bit));							/* Clear Register */
+		pGPIOHandle->pGPIOx->AFR[AFR_register] |= pGPIOHandle->GPIO_PinConfig.GPIO_PinAltFunMode << (4 * AFR_bit);
 	}
 }
 
@@ -276,4 +305,116 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber)
 	pGPIOx->ODR  ^= ( 1 << PinNumber);
 }
 
+/*********************************************************************
+ * @fn      		  - GPIOToSYSCFG_EXTICRPortCode
+ *
+ * @brief             - This function find the port code for SYSCFG_EXTICR
+ *
+ * @param[in]         - base address of the gpio peripheral
+ *
+ * @return            - port_code
+ *
+ * @Note              -  none
 
+ */
+uint8_t GPIOToSYSCFG_EXTICRPortCode(GPIO_RegDef_t *pGPIOx)
+{
+	if(pGPIOx == GPIOA)
+	{
+		return 0;
+	}else if (pGPIOx == GPIOB)
+	{
+		return 1;
+	}else if (pGPIOx == GPIOC)
+	{
+		return 2;
+	}else if (pGPIOx == GPIOD)
+	{
+		return 3;
+	}else if (pGPIOx == GPIOE)
+	{
+		return 4;
+	}else if (pGPIOx == GPIOH)
+	{
+		return 7;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+/*********************************************************************
+ * @fn      		  - GPIO_IRQInterruptConfig
+ *
+ * @brief             - This function find configures IRQ interrupt
+ *
+ * @param[in]         - IRQ number
+ * 					  - ENABLE or DISABLE macros
+ *- ENABLE or DISABLE macros
+ * @return            -
+ *
+ * @Note              -  none
+
+ */
+void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t EnorDi)
+{
+	if(EnorDi ==ENABLE)
+	{
+		if(IRQNumber <= 31)
+		{
+			/* Program ISER0 Reg */
+			NVIC_ISER->ISER[0] |= (1 << IRQNumber);
+		}
+		else if (IRQNumber > 31 && IRQNumber < 64)
+		{
+			/* Program ISER1 Reg */
+			NVIC_ISER->ISER[1] |= (1 << (IRQNumber % 32));
+		}
+		else if (IRQNumber > 64 && IRQNumber < 96)
+		{
+			/* Program ISER2 Reg */
+			NVIC_ISER->ISER[2] |= (1 << (IRQNumber % 64));
+		}
+	}
+	else
+	{
+		if(IRQNumber <= 31)
+		{
+			/* Program ISER0 Reg */
+			NVIC_ICER->ICER[0] |= (1 << IRQNumber);
+		}
+		else if (IRQNumber > 31 && IRQNumber < 64)
+		{
+			/* Program ISER1 Reg */
+			NVIC_ICER->ICER[1] |= (1 << (IRQNumber % 32));
+		}
+		else if (IRQNumber > 64 && IRQNumber < 96)
+		{
+			/* Program ISER2 Reg */
+			NVIC_ICER->ICER[1] |= (1 << (IRQNumber % 64));
+		}
+	}
+}
+
+/*********************************************************************
+ * @fn      		  - GPIO_IRQHandling
+ *
+ * @brief             - This function should be called when an interrupt is triggered
+ *
+ * @param[in]         - PinNumber to be cleared from EXTI PR Reg
+ *
+ * @return            -
+ *
+ * @Note              -  none
+
+ */
+void GPIO_IRQHandling(uint8_t PinNumber)
+{
+	/* Check if the EXTI PR Reg is set at this bit */
+	if(EXTI->PR & (1 << PinNumber))
+	{
+		/* Clear this bit from EXTI PR Reg */
+		EXTI->PR |= (1 << PinNumber);
+	}
+}
