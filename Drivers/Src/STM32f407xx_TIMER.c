@@ -211,8 +211,25 @@ void TIM_ADVANCED_init(TIM_ADVANCED_Handle_t *pTIMHandle)
 	/* Set auto reload value */
 	pTIMHandle->pTIMx->TIMx_ARR = pTIMHandle->TIM_Config.TIM_AutoRelaod - 1;
 
+	if(pTIMHandle->TIM_Config.TIM_InterruptEnable)
+	{
+		/* Enable Timer update interrupt */
+		pTIMHandle->pTIMx->TIMx_DIER |= (1 << TIM_ADV_DIER_UIF);
+
+		/* Enable Timer update interrupt in NVIC */
+		NVIC_ISER->ISER[0] |= (1 << pTIMHandle->TIM_Config.TIM_IRQNumber);
+	}
+	else
+	{
+		/* Disable Timer update interrupt */
+		pTIMHandle->pTIMx->TIMx_DIER &= ~(1 << TIM_ADV_DIER_UIF);
+
+		/* Disable Timer update interrupt in NVIC */
+		NVIC_ICER->ICER[0] |= (1 << pTIMHandle->TIM_Config.TIM_IRQNumber);
+	}
+
 	/* Enable Timer */
-	pTIMHandle->pTIMx->TIMx_CR1 |= (1 << TIM_ADV_CR1_CEN) ;
+	pTIMHandle->pTIMx->TIMx_CR1 |= (1 << TIM_ADV_CR1_CEN);
 
 }
 
@@ -242,5 +259,27 @@ uint8_t Check_TIM_ADVANCED_Interrupt_flag(TIM_ADVANCED_Handle_t *pTIMHandle)
 	{
 		/* Timer interrupt flag not updated */
 		return FLAG_NOT_UPDATED;
+	}
+}
+
+/*********************************************************************
+ * @fn      		  - TIM_IRQHandling
+ *
+ * @brief             - This function should be called when an interrupt is triggered
+ *
+ * @param[in]         -
+ *
+ * @return            -
+ *
+ * @Note              -  none
+
+ */
+void TIM_IRQHandling(TIM_ADVANCED_Handle_t *pTIMHandle)
+{
+	/* Check if the interrupt is pending */
+	if(pTIMHandle->pTIMx->TIMx_SR & (1 << TIM_ADV_SR_UIF))
+	{
+		/* Clear the update interrupt flag */
+		pTIMHandle->pTIMx->TIMx_SR &= ~(1 << TIM_ADV_SR_UIF);
 	}
 }

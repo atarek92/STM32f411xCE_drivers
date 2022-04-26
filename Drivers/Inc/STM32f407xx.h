@@ -697,6 +697,12 @@ typedef struct
 #define TIM_ADV_SR_UIF	     				 0				/*  Counter enable */
 
 
+/*
+ * Bit position definitions TIM_ADV_DIER
+ */
+#define TIM_ADV_DIER_UIF	  				 0				/*  Update interrupt enable */
+
+
 /******************************************************************************************
  *Bit position definitions of General Timer 2 to 5 peripheral
  ******************************************************************************************/
@@ -725,5 +731,9 @@ typedef struct
 #define IRQ_NO_EXTI3							9
 #define IRQ_NO_EXTI4							10
 #define IRQ_NO_EXTI9_5							23
+#define IRQ_NO_TIM1_BRK_TIM9					24
+#define IRQ_NO_TIM1_UP_TIM10					25
+#define IRQ_NO_TIM1_TRG_COM_TIM11				26
+#define IRQ_NO_TIM1_CC							27
 #define IRQ_NO_EXTI15_10						40
 #endif /* STM32F407XX_H_ */

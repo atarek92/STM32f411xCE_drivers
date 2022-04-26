@@ -1,5 +1,5 @@
 /*
- * gpio_interrupt.c
+ * gpio_interrupt_test.c
  *
  *  Created on: Apr 24, 2022
  *      Author: atarek

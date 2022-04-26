@@ -15,7 +15,8 @@ typedef struct
 {
 	uint16_t TIM_Prescaler;			/* Timer Prescaler */
 	uint16_t TIM_AutoRelaod;		/* Timer auto-reload register */
-
+	uint8_t TIM_InterruptEnable;	/* Enable / Disable Interrupt for a timer */
+	uint8_t TIM_IRQNumber;		/* Timer IRQ Number */
 }TIM_Config_t;
 
 /*
@@ -73,5 +74,7 @@ void TIM_10_11_GENERAL_PeriClockControl(TIM_10_11_GENERAL_RegDef_t *pTIMx, uint8
 
 void TIM_ADVANCED_init(TIM_ADVANCED_Handle_t *pTIMHandle);
 uint8_t Check_TIM_ADVANCED_Interrupt_flag(TIM_ADVANCED_Handle_t *pTIMHandle);
+
+void TIM_IRQHandling(TIM_ADVANCED_Handle_t *pTIMHandle);
 
 #endif /* INC_STM32F407XX_TIMER_H_ */
