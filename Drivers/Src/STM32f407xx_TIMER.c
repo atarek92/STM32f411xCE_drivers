@@ -225,7 +225,7 @@ void TIM_ADVANCED_init(TIM_ADVANCED_Handle_t *pTIMHandle)
 		pTIMHandle->pTIMx->TIMx_DIER &= ~(1 << TIM_ADV_DIER_UIF);
 
 		/* Disable Timer update interrupt in NVIC */
-		NVIC_ICER->ICER[0] |= (1 << pTIMHandle->TIM_Config.TIM_IRQNumber);
+		NVIC_ICER->ICER[0] &= ~(1 << pTIMHandle->TIM_Config.TIM_IRQNumber);
 	}
 
 	/* Enable Timer */

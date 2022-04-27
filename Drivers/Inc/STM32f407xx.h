@@ -639,14 +639,13 @@ typedef struct
 /*
  * Bit position definitions ADC_CR1
  */
-
-
+#define ADC_CR1_EOCIE     				 5				/* Interrupt enable for end of conversion */
 
 /*
  * Bit position definitions ADC_CR2
  */
-#define ADC_CR2_ADON     				 0				/* A/D Converter ON / OFF */
-#define ADC_CR2_CONT     				 1				/* A/D Converter Mode Single / Continuous */
+#define ADC_CR2_ADON     				 0				/* ADC Converter ON / OFF */
+#define ADC_CR2_CONT     				 1				/* ADC Converter Mode Single / Continuous */
 #define ADC_CR2_SWSTART     			 30				/* Start conversion of regular channels */
 
 /*
@@ -730,6 +729,7 @@ typedef struct
 #define IRQ_NO_EXTI2							8
 #define IRQ_NO_EXTI3							9
 #define IRQ_NO_EXTI4							10
+#define IRQ_NO_ADC1								18
 #define IRQ_NO_EXTI9_5							23
 #define IRQ_NO_TIM1_BRK_TIM9					24
 #define IRQ_NO_TIM1_UP_TIM10					25

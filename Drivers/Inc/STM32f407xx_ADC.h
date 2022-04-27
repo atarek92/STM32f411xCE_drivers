@@ -18,7 +18,9 @@ typedef struct
 {
 	uint8_t ADC_Channel;			/* ADC Channel */
 	uint8_t ADC_SeqOrder;			/* ADC Sequence Order */
-	uint8_t ADC_ConverterMode;		/* A/D Converter Mode Single / Continuous */
+	uint8_t ADC_ConverterMode;		/* ADC Converter Mode Single / Continuous */
+	uint8_t ADC_InterruptEnable;	/* Enable / Disable ADC Interrupt */
+	uint8_t ADC_IRQNumber;
 
 }ADC_Config_t;
 
@@ -97,5 +99,8 @@ void ADC_DeInit(ADC_RegDef_t *pADCx);
  * ADC read
  */
 uint32_t ADC_ReadData(ADC_Handle_t *pADCHandle);
+
+
+uint32_t ADC_IRQHandling(ADC_Handle_t *pADCHandle);
 
 #endif /* INC_STM32F407XX_ADC_H_ */

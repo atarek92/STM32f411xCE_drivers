@@ -68,6 +68,23 @@ void ADC_Init(ADC_Handle_t *pADCHandle)
 	/* Enable ADC module*/
 	pADCHandle->pADCx->ADC_CR2 |= 1 << ADC_CR2_ADON;
 
+	if(pADCHandle->ADC_Config.ADC_InterruptEnable)
+	{
+		/* Enable ADC end of conversion interrupt */
+		pADCHandle->pADCx->ADC_CR1 |= (1 << ADC_CR1_EOCIE);
+
+		/* Enable ADC interrupt in NVIC */
+		NVIC_ISER->ISER[0] |= (1 << pADCHandle->ADC_Config.ADC_IRQNumber);
+	}
+	else
+	{
+		/* Disable ADC end of conversion interrupt */
+		pADCHandle->pADCx->ADC_CR1 &= ~(1 << ADC_CR1_EOCIE);
+
+		/* Disable ADC interrupt in NVIC */
+		NVIC_ICER->ICER[0] &= ~(1 << pADCHandle->ADC_Config.ADC_IRQNumber);
+	}
+
 	/* Start conversion */
 	pADCHandle->pADCx->ADC_CR2 |= 1 << ADC_CR2_SWSTART;
 }
@@ -95,4 +112,26 @@ uint32_t ADC_ReadData(ADC_Handle_t *pADCHandle)
 		end_of_conv_flag = pADCHandle->pADCx->ADC_SR & (1 << ADC_SR_EOC);
 	}
 	return (pADCHandle->pADCx->ADC_DR);
+}
+
+/*********************************************************************
+ * @fn      		  - ADC_IRQHandling
+ *
+ * @brief             - This function should be called when an interrupt is triggered
+ *
+ * @param[in]         -
+ *
+ * @return            -
+ *
+ * @Note              -  none
+
+ */
+uint32_t ADC_IRQHandling(ADC_Handle_t *pADCHandle)
+{
+	/* Check if end of conversion occurred */
+	if(pADCHandle->pADCx->ADC_SR & (1 << ADC_SR_EOC))
+	{
+		return (pADCHandle->pADCx->ADC_DR);
+	}
+	return (0);
 }
